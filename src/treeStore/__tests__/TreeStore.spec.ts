@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { TreeStore } from '../TreeStore'
+import { TreeStore } from '..'
 
 const items = [
   { id: 1, parent: null, label: 'Айтем 1' },

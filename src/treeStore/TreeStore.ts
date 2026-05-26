@@ -1,17 +1,17 @@
-type Id = string | number
+export type Id = string | number
 
-interface TreeItem {
+export interface TreeItem {
   id: Id
   parent: Id | null
-  label: string
+  [key: string]: unknown
 }
 
-class TreeStore {
-  private items: TreeItem[]
-  private itemMap: Map<Id, TreeItem>
-  private childrenMap: Map<Id | null, TreeItem[]>
+export class TreeStore<T extends TreeItem = TreeItem> {
+  private items: T[]
+  private itemMap: Map<Id, T>
+  private childrenMap: Map<Id | null, T[]>
 
-  constructor(items: TreeItem[]) {
+  constructor(items: T[]) {
     this.items = items
     this.itemMap = new Map()
     this.childrenMap = new Map()
@@ -26,21 +26,21 @@ class TreeStore {
     }
   }
 
-  getAll(): TreeItem[] {
+  getAll(): T[] {
     return this.items
   }
 
-  getItem(id: Id): TreeItem | undefined {
+  getItem(id: Id): T | undefined {
     return this.itemMap.get(id)
   }
 
-  getChildren(id: Id): TreeItem[] {
+  getChildren(id: Id): T[] {
     return this.childrenMap.get(id) ?? []
   }
 
-  getAllChildren(id: Id): TreeItem[] {
-    const result: TreeItem[] = []
-    const stack: TreeItem[] = this.getChildren(id)
+  getAllChildren(id: Id): T[] {
+    const result: T[] = []
+    const stack: T[] = this.getChildren(id)
 
     while (stack.length > 0) {
       const current = stack.pop()
@@ -53,8 +53,8 @@ class TreeStore {
     return result
   }
 
-  getAllParents(id: Id): TreeItem[] {
-    const result: TreeItem[] = []
+  getAllParents(id: Id): T[] {
+    const result: T[] = []
     const stack = [this.itemMap.get(id)]
 
     while (stack.length > 0) {
@@ -69,7 +69,7 @@ class TreeStore {
     return result
   }
 
-  addItem(item: TreeItem): void {
+  addItem(item: T): void {
     this.items.push(item)
     this.itemMap.set(item.id, item)
 
@@ -100,7 +100,7 @@ class TreeStore {
     this.items = this.items.filter((item) => !toRemove.has(item.id))
   }
 
-  updateItem(updated: TreeItem): void {
+  updateItem(updated: T): void {
     const existing = this.itemMap.get(updated.id)
     if (!existing) return
 
@@ -129,6 +129,3 @@ class TreeStore {
     if (itemsIdx !== -1) this.items[itemsIdx] = updated
   }
 }
-
-export { TreeStore }
-export type { TreeItem, Id }
